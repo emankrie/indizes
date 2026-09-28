@@ -16,28 +16,31 @@ def create_table(conn):
     )
     conn.commit()
 
-def insert_random_person(conn):
-    sql = """ 
-    INSERT INTO personen(vorname, nachname)
-    VALUES (?, ?)
-    """
-    cursor = conn.cursor()
-    cursor.execute(sql, (fake.first_name(), fake.last_name()))
-    conn.commit()
 
-def insert_500k_random_people(conn):
-    sql = """ 
-    INSERT INTO personen(vorname, nachname)
-    VALUES (?, ?)
+def insert_biased_people(conn):
+    """
+    Erzeugt 500k Personen:
+    250k haben den Vornamen 'Max'
     """
     cursor = conn.cursor()
-    counter = 0
-    while counter < 500000:
+
+    sql = """
+        INSERT INTO personen(vorname, nachname)
+        VALUES (?, ?)
+    """
+
+    # 250k Bias: Vorname = Max
+    for name in range(250_000):
+        cursor.execute(sql, ("Max", fake.last_name()))
+
+    # 250k normale Faker-Daten
+    for name in range(250_000):
         cursor.execute(sql, (fake.first_name(), fake.last_name()))
-        counter += 1
+
     conn.commit()
 
-conn = connect("./personen.db")
+
+conn = connect("./personen_bias.db")
 create_table(conn)
-insert_500k_random_people(conn)
+insert_biased_people(conn)
 conn.close()
