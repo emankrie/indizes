@@ -35,3 +35,17 @@ def insert_500k_random_people(conn):
         cursor.execute(sql, (fake.first_name(), fake.last_name()))
         counter += counter
     return cursor.fetchall()
+
+#wie zufällig streut die Bibliothek?
+
+Vornamen = []
+Nachnamen = []
+countdown = 500000
+
+while countdown > 0:
+    Vornamen.append(fake.first_name()) 
+    Nachnamen.append(fake.last_name())
+    countdown -= 1;
+
+for name in Vornamen:
+

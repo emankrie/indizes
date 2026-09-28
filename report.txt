@@ -1,0 +1,14 @@
+Report
+
+Ich würde die Streuung bei Namen anhand der Häufigkeit und Anzahl der unterschiedlichen Vor- und Nachnamen,  berechnen.
+In der Realität kommen Namen natürlich unterschiedlich häufig vor. Sie sind also nicht gleichmäßig verteilt.
+Sollte die Faker Bibliothek saubere zufällige Datensätze liefern, müssten also alle Vornamen bzw. alle Nachnamen (annähernd) gleich oft vorkommen.
+
+Die hohe Zufälligkeit der Streuung der erzeugten Namen würde sich anhand einer hohen Anzahl unterschiedlicher Namen, die allerdings alle ähnlich häufig vorkommen, zeigen.
+Das wäre zwar realitätsfern, allerdings auch ein Zeichen für einen guten "Zufallsalogrythmus".
+
+Es gilt also herauszufinden:
+
+Wie viele unterschiedliche Vor- und Nachnamen gibt es?
+Wie häufig kommt jeder dieser Vor- und Nachnamen vor?
+Wie weit ist die Häufigkeit der Namen von einer gleichmäßigen Verteilung entfernt?
