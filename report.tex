@@ -1,88 +1,95 @@
-\documentclass{article}
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\title{Report}
+\author{}
+\date{}
 
 \begin{document}
 
-\section*{Report}
+\maketitle
 
 Ich würde die Streuung bei Namen anhand der Häufigkeit und Anzahl der unterschiedlichen Vor- und Nachnamen berechnen.
-In der Realität kommen Namen natürlich unterschiedlich häufig vor. Sie sind also nicht gleichmäßig verteilt.
-Sollte die Faker Bibliothek saubere zufällige Datensätze (unrealistisch) liefern, müssten also alle Vornamen bzw.
-alle Nachnamen (annähernd) gleich oft vorkommen.
+In der Realität kommen Namen unterschiedlich häufig vor, sie sind also nicht gleichmäßig verteilt.
+Sollte die Faker-Bibliothek saubere zufällige Datensätze liefern (was unrealistisch wäre), müssten alle Vornamen bzw.
+alle Nachnamen annähernd gleich oft vorkommen.
 
-Die hohe Zufälligkeit der Streuung der erzeugten Namen würde sich anhand einer hohen Anzahl unterschiedlicher Namen,
-die allerdings alle ähnlich häufig vorkommen, zeigen. Das wäre realitätsfern.
+Die hohe Zufälligkeit der Streuung der erzeugten Namen würde sich anhand einer hohen Anzahl unterschiedlicher Namen zeigen,
+die allerdings alle ähnlich häufig vorkommen. Das wäre realitätsfern.
 
 Ich habe die Streuung der Bibliothek überprüft, indem ich folgende Daten ausgelesen habe:
 
-Wie viele unterschiedliche Vornamen gibt es?  
-==> 2002
+\section*{Verteilung der Vornamen}
+\begin{itemize}
+    \item Anzahl unterschiedlicher Vornamen: 2002
+    \item Häufigster Vorname: Jonas (492)
+    \item Seltenster Vorname: Natalja (199)
+    \item Durchschnittliche Häufigkeit: 249{,}75
+\end{itemize}
 
-Wie viele unterschiedliche Nachnamen gibt es?  
-==> 404
+\section*{Verteilung der Nachnamen}
+\begin{itemize}
+    \item Anzahl unterschiedlicher Nachnamen: 404
+    \item Häufigster Nachname: Seifert (2533)
+    \item Seltenster Nachname: Tintzmann (1123)
+    \item Durchschnittliche Häufigkeit: 1237{,}62
+\end{itemize}
 
-Wie oft kommt der häufigste / seltenste Vorname vor und wie oft kommt ein Vorname durchschnittlich vor?  
-==>  
-MAX = Jonas 492  
-MIN = Natalja 199  
-AVG = 249.75
+Der häufigste Vorname kommt 2{,}47-mal so oft vor wie der seltenste.
+Der häufigste Nachname kommt 2{,}26-mal so oft vor wie der seltenste.
+Dies entspricht einer realistisch ungleichmäßigen Verteilung und ist somit realitätsnah.
 
-Wie oft kommt der häufigste / seltenste Nachname vor und wie oft kommt ein Nachname durchschnittlich vor?  
-==>  
-MAX = Seifert 2533  
-MIN = Tintzmann 1123  
-AVG = 1237.62
+\section*{Performance der Datenabfrage}
 
-Anhand dieser Daten kann ich sagen, dass der häufigste Vorname 2,47 mal so oft vorkommt wie der Seltenste
-und der häufigste Nachname 2,26 mal so oft vorkommt wie der Seltenste.
-Das entspricht einer realistisch ungleichmäßigen Verteilung und ist somit realitätsnah.
+Zur Überprüfung der Performance wurde folgender SQL-Select verwendet:
 
-Um die Performance der Datenabfrage zu überprüfen, habe ich folgenden Select verwendet:
+\begin{quote}
+\texttt{SELECT COUNT(DISTINCT vorname) FROM personen;}
+\end{quote}
 
-``SELECT COUNT(DISTINCT vorname) FROM personen;``
+\subsection*{Ohne Index}
+\begin{itemize}
+    \item Run Time: real 0.305, user 0.281250, sys 0.031250
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 2870
+    \item Speicherbedarf: 11{,}755520 MB
+\end{itemize}
 
-Performance ohne Index:  
-Run Time: real 0.305, user 0.281250, sys 0.031250
+\subsection*{Mit Index}
+\begin{itemize}
+    \item Run Time: real 0.057, user 0.062500, sys 0.000000
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 6703
+    \item Speicherbedarf: 27{,}455488 MB
+\end{itemize}
 
-Performance mit Index:  
-Run Time: real 0.057, user 0.062500, sys 0.000000
+Die Abfrage ist mit Index etwa fünfmal schneller, benötigt jedoch 2{,}34-mal mehr Speicher.
 
-Durch das Verwenden des Index ist die Abfrage ca. 5 mal schneller erfolgt.
+\section*{Vergleich mit biased Datenbank (50\% Vorname „Max“)}
 
-Speicherbedarf ohne Index:  
-Seitengröße: 4096B  
-Seitenanzahl: 2870  
-4096 * 2870 = 11.755520MB
+\subsection*{Ohne Index}
+\begin{itemize}
+    \item Run Time: real 0.200, user 0.156250, sys 0.031250
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 2648
+    \item Speicherbedarf: 10{,}846208 MB
+\end{itemize}
 
-Speicherbedarf mit Index:  
-Seitengröße: 4096B  
-Seitenanzahl: 6703  
-4096 * 6703 = 27.455488MB
+\subsection*{Mit Index}
+\begin{itemize}
+    \item Run Time: real 0.064, user 0.046875, sys 0.000000
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 4336
+    \item Speicherbedarf: 17{,}760256 MB
+\end{itemize}
 
-Der Speicherbedarf hat sich also um den Faktor 2.34 erhöht.
+Die Performance ist etwa dreimal besser, der Speicherbedarf steigt um den Faktor 1{,}64.
 
-Zum Vergleich habe ich eine Datenbank erstellt, in der 50\% der Personen den Vornamen ``Max'' haben.
-
-Performance ohne Index:  
-Run Time: real 0.200, user 0.156250, sys 0.031250
-
-Performance mit Index:  
-Run Time: real 0.064, user 0.046875, sys 0.000000
-
-Speicherbedarf ohne Index:  
-Seitengröße: 4096B  
-Seitenanzahl: 2648  
-4096 * 2648 = 10.846208MB
-
-Speicherbedarf mit Index:  
-Seitengröße: 4096B  
-Seitenanzahl: 4336  
-4096 * 4336 = 17.760256MB
-
-Die Performance ist ca. 3 mal besser, der Speicherbedarf ist um den Faktor 1,64 höher.
-
-Auffällig ist, dass der Select bei der indexierten Biased-Datenbank viel weniger Speicher benötigt und dabei fast die gleiche Performance
-bietet wie die indexierte ``normale'' Datenbank. Ich denke, das ist darauf zurückzuführen, dass der Wert des Schlüssels ``Vorname'' in 50\%
-der Fälle gleich ist. Somit müssen weniger ``Knoten'' beim Erstellen des Index beachtet werden, was zu einem Index mit weniger Seiten führt.
+Auffällig ist, dass der Select bei der indexierten biased Datenbank weniger Speicher benötigt und fast die gleiche Performance bietet wie die indexierte normale Datenbank. Dies liegt vermutlich daran, dass der Schlüsselwert „Vorname“ in 50\% der Fälle identisch ist und somit weniger Knoten im Index erzeugt werden müssen.
 
 \end{document}
