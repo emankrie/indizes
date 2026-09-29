@@ -1,0 +1,139 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{geometry}
+
+\geometry{margin=2.5cm}
+\setstretch{1.2}
+
+\title{Analyse der Streuung von Namen und Performance der Datenbankabfragen}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Report}
+
+Ich würde die Streuung bei Namen anhand der Häufigkeit und Anzahl der unterschiedlichen Vor- und Nachnamen berechnen.
+In der Realität kommen Namen natürlich unterschiedlich häufig vor. Sie sind also nicht gleichmäßig verteilt.
+Sollte die Faker-Bibliothek saubere zufällige Datensätze (unrealistisch) liefern, müssten also alle Vornamen bzw.
+alle Nachnamen (annähernd) gleich oft vorkommen.
+
+Die hohe Zufälligkeit der Streuung der erzeugten Namen würde sich anhand einer hohen Anzahl unterschiedlicher Namen,
+die allerdings alle ähnlich häufig vorkommen, zeigen.
+Das wäre realitätsfern.
+
+Ich habe die Streuung der Bibliothek überprüft, indem ich folgende Daten ausgelesen habe:
+
+\subsection*{Anzahl unterschiedlicher Namen}
+
+\begin{itemize}
+    \item Unterschiedliche Vornamen: 2002
+    \item Unterschiedliche Nachnamen: 404
+\end{itemize}
+
+\subsection*{Häufigkeiten der Vornamen}
+
+\begin{itemize}
+    \item Häufigster Vorname: Jonas (492)
+    \item Seltenster Vorname: Natalja (199)
+    \item Durchschnittliche Häufigkeit: 249{,}75
+\end{itemize}
+
+\subsection*{Häufigkeiten der Nachnamen}
+
+\begin{itemize}
+    \item Häufigster Nachname: Seifert (2533)
+    \item Seltenster Nachname: Tintzmann (1123)
+    \item Durchschnittliche Häufigkeit: 1237{,}62
+\end{itemize}
+
+Anhand dieser Daten kann ich sagen, dass der häufigste Vorname 2{,}47 mal so oft vorkommt wie der seltenste
+und der häufigste Nachname 2{,}26 mal so oft vorkommt wie der seltenste.
+Das entspricht einer realistisch ungleichmäßigen Verteilung und ist somit realitätsnah.
+
+\section*{Performance der Datenabfrage}
+
+Zur Überprüfung der Performance habe ich folgenden Select verwendet:
+
+\begin{verbatim}
+SELECT COUNT(DISTINCT vorname) FROM personen;
+\end{verbatim}
+
+\subsection*{Performance ohne Index}
+
+\begin{itemize}
+    \item Run Time: real 0.305, user 0.281250, sys 0.031250
+\end{itemize}
+
+\subsection*{Performance mit Index}
+
+\begin{itemize}
+    \item Run Time: real 0.057, user 0.062500, sys 0.000000
+\end{itemize}
+
+Durch das Verwenden des Index ist die Abfrage ca. 5 mal schneller erfolgt.
+
+\subsection*{Speicherbedarf ohne Index}
+
+\begin{itemize}
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 2870
+    \item Gesamt: 11{,}755520 MB
+\end{itemize}
+
+\subsection*{Speicherbedarf mit Index}
+
+\begin{itemize}
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 6703
+    \item Gesamt: 27{,}455488 MB
+\end{itemize}
+
+Der Speicherbedarf hat sich also um den Faktor 2{,}34 erhöht.
+
+\section*{Vergleich mit Biased-Datenbank}
+
+Ich habe eine Datenbank erstellt, in der 50\% der Personen den Vornamen ``Max'' haben.
+
+\subsection*{Performance ohne Index}
+
+\begin{itemize}
+    \item Run Time: real 0.200, user 0.156250, sys 0.031250
+\end{itemize}
+
+\subsection*{Performance mit Index}
+
+\begin{itemize}
+    \item Run Time: real 0.064, user 0.046875, sys 0.000000
+\end{itemize}
+
+\subsection*{Speicherbedarf ohne Index}
+
+\begin{itemize}
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 2648
+    \item Gesamt: 10{,}846208 MB
+\end{itemize}
+
+\subsection*{Speicherbedarf mit Index}
+
+\begin{itemize}
+    \item Seitengröße: 4096B
+    \item Seitenanzahl: 4336
+    \item Gesamt: 17{,}760256 MB
+\end{itemize}
+
+Die Performance ist ca. 3 mal besser, der Speicherbedarf ist um den Faktor 1{,}64 höher.
+
+Auffällig ist, dass der Select bei der indexierten Biased-Datenbank viel weniger Speicher benötigt und dabei fast die gleiche Performance
+bietet wie die indexierte ``normale'' Datenbank. Ich denke, das ist darauf zurückzuführen, dass der Wert des Schlüssels ``Vorname'' in 50\%
+der Fälle gleich ist. Somit müssen weniger Knoten beim Erstellen des Index beachtet werden, was zu einem Index mit weniger Seiten führt.
+
+\end{document}
